@@ -1,4 +1,5 @@
 {
+  "defaultTheme": "answers-hitchhiker-theme",
   "dirs": {
     "themes": "themes",
     "config": "config",
@@ -8,9 +9,8 @@
       "partials",
       "layouts/header.hbs",
       "layouts/footer.hbs",
-      "layouts/headincludes.hbs"
-    ],
-    "preservedFiles": []
-  },
-  "defaultTheme": "answers-hitchhiker-theme"
+      "layouts/headincludes.hbs",
+      "cards"
+    ]
+  }
 }

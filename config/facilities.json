@@ -1,17 +1,17 @@
 {
-  "verticalKey": "jobs", // The vertical key from your search configuration
-  "pageTitle": "Job Search", // !!!REPLACE THIS VALUE!!! The contents of the title tag and meta open graph tag for title
+  "verticalKey": "facilities", // The vertical key from your search configuration
+  "pageTitle": "Healthcare Facility Search", // !!!REPLACE THIS VALUE!!! The contents of the title tag and meta open graph tag for title
   // "metaDescription": "", // The meta tag for open graph description
   // "canonicalUrl": "", // The link tag for canonical URL as well as the meta tag for open graph url
   // "keywords": "", // The meta tag for keywords
   "pageSettings": {
     /**
-     "search": {
-       "verticalKey": "<REPLACE ME>", // The vertical key from your search configuration
-       "defaultInitialSearch": "" // Enter a default search term
-     }
+    "search": {
+      "verticalKey": "<REPLACE ME>", // The vertical key from your search configuration
+      "defaultInitialSearch": "" // Enter a default search term
+    }
     **/
-  },  
+  },
   "componentSettings": {
     /**
     "QASubmission": {
@@ -41,19 +41,31 @@
     },
     "Pagination": {
       "noResults": {
-        "visible": true 
+        "visible": true
       }
     }
   },
   // Configuration used to define the look and feel of the vertical, both on this page and, by default,
   // on the universal page.
   "verticalsToConfig": {
-    "jobs": { // The vertical key from your search configuration
+    "facilities": { // The vertical key from your search configuration
       // "label": "", // The name of the vertical in the section header and the navigation bar
       // "verticalLimit": 15, // The result count limit for vertical search
       // "universalLimit": 5, // The result count limit for universal search
-      "cardType": "job-standard", // The name of the card to use - e.g. accordion, location, customcard 
-      "icon": "briefcase" // The icon to use on the card for this vertical
+      "cardType": "location-standard", // The name of the card to use - e.g. accordion, location, customcard 
+      "icon": "office", // The icon to use on the card for this vertical
+      "mapConfig": {
+        "mapProvider": "MapBox", // The name of the provider (e.g. Mapbox, Google)
+        "pin": {
+          "backgroundColor": "", // Enter a hex value or color for the pin background
+          "labelColor": "", // Enter a hex value or color for the label color
+          "strokeColor": "" // Enter a hex value or color for the stroke color
+        },
+        "noResults": {
+          "displayAllResults": true, // Set to FALSE to hide results on the map when a search returns no results
+          "visible": true // Set to FALSE to hide the map when a search returns no results
+        }
+      }
     }
   }
 }
