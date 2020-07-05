@@ -7,7 +7,7 @@
   "pageSettings": {
     /**
      "search": {
-       "verticalKey": "<REPLACE ME>", // The vertical key from your search configuration
+       "verticalKey": "menu-items", // The vertical key from your search configuration
        "defaultInitialSearch": "" // Enter a default search term
      }
     **/
@@ -49,11 +49,11 @@
   // on the universal page.
   "verticalsToConfig": {
     "menu-items": { // The vertical key from your search configuration
-      // "label": "", // The name of the vertical in the section header and the navigation bar
+      "label": "Menu Items", // The name of the vertical in the section header and the navigation bar
       // "verticalLimit": 15, // The result count limit for vertical search
       // "universalLimit": 5, // The result count limit for universal search
       "cardType": "menuitem-standard", // The name of the card to use - e.g. accordion, location, customcard 
-      "icon": "document" // The icon to use on the card for this vertical
+      "icon": "kabob" // The icon to use on the card for this vertical
     }
   }
 }
