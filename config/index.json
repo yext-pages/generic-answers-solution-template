@@ -23,7 +23,7 @@
       "label": "All" // The name of the universal tab in the navigation bar
     },
     "products": {
-      "cardType": "standard", // Overriding the card on universal vs. vertical
+      "cardType": "product-standard", // Overriding the card on universal vs. vertical
       "icon": "tag" // The icon to use on the card for this vertical
     }
   }
