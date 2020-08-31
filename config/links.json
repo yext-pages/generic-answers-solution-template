@@ -50,10 +50,12 @@
   "verticalsToConfig": {
     "links": { // The vertical key from your search configuration
       // "label": "", // The name of the vertical in the section header and the navigation bar
+      // "sectionTitle": "", // If you only want to update the section header and not the navigation, use this instead of label
       // "verticalLimit": 15, // The result count limit for vertical search
       // "universalLimit": 5, // The result count limit for universal search
       "cardType": "link-standard", // The name of the card to use - e.g. accordion, location, customcard 
-      "icon": "link" // The icon to use on the card for this vertical
+      "icon": "link", // The icon to use on the card for this vertical
+      "universalSectionTemplate": "standard" // choose a template for universal search, defaults to standard
     }
   }
 }
