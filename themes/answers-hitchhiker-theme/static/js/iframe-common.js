@@ -4,6 +4,7 @@ export function generateIFrame(domain, queryParam, urlParam) {
   var isLocalHost = window.location.host.split(':')[0] === 'localhost';
   var containerEl = document.querySelector('#answers-container');
   var iframe = document.createElement('iframe');
+  var pathToIndex = containerEl.dataset.path;
   iframe.allow = 'geolocation';
 
   domain = domain || '';
@@ -14,14 +15,18 @@ export function generateIFrame(domain, queryParam, urlParam) {
     var paramString = window.location.search;
     paramString = paramString.substr(1, paramString.length);
 
+    // Decode ASCII forward slash to avod repeat encodings on page refreshes
+    paramString = paramString.replace("%2F", "/");
+
     // Parse the params out of the URL
     var params = paramString.split('&'),
                  verticalUrl;
     var referrerPageUrl = document.referrer.split('?')[0].split('#')[0];
 
-    // Default for localhost is index.html, empty o/w
-    if (isLocalHost) {
-      verticalUrl = 'index.html';
+    if (pathToIndex) {
+      verticalUrl = pathToIndex;
+    } else if (isLocalHost) {
+      verticalUrl = 'index.html'; // Default for localhost is index.html, empty o/w
     }
 
     // Don't include the verticalUrl or raw referrerPageUrl in the frame src
@@ -80,16 +85,13 @@ export function generateIFrame(domain, queryParam, urlParam) {
     onMessage: function(messageData) {
       const message = JSON.parse(messageData.message);
       const params = message.params;
-      const replaceHistory = message.replaceHistory;
+      const pageTitle = message.pageTitle;
+      pageTitle && (iframe.title = pageTitle);
       iframe.iFrameResizer.resize();
       var currLocation = window.location.href.split('?')[0];
       var newLocation = currLocation + '?' + params;
       if (window.location.href !== newLocation) {
-        if (replaceHistory) {
-          history.replaceState({query: params}, window.document.title, newLocation);
-        } else {
-          history.pushState({query: params}, window.document.title, newLocation);
-        }
+        history.replaceState({query: params}, window.document.title, newLocation);
       }
     }
   }, '#answers-frame');

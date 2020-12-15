@@ -59,8 +59,10 @@
 
     &-resultsWrapper
     {
+      display: flex;
       flex-grow: 1;
       padding-top: calc(var(--yxt-base-spacing) * 2);
+      flex-direction: column;
 
       .yxt-ResultsHeader {
         padding: 0 var(--yxt-results-header-spacing);
@@ -85,15 +87,28 @@
       .Answers-filterBox,
       .Answers-sortOptions {
         padding: 0 24px;
+        padding-top: 20px;
         width: 100%;
 
-        &:not(:last-child) {
-          padding-bottom: 12px;
-          border-bottom: var(--yxt-border-default);
+        &:first-child {
+          padding-top: 0px;
         }
+      }
 
-        &:not(:first-child) {
-          padding-top: 20px;
+      .Answers-facets,
+      .Answers-filterBox {
+        &:not(:last-child) {
+          .yxt-FilterBox-container {
+            @include vertical_filter_group_bottom_border;
+          }
+        }
+      }
+
+      .Answers-sortOptions {
+        &:not(:last-child) {
+          .yxt-SortOptions-fieldSet {
+            @include vertical_filter_group_bottom_border;
+          }
         }
       }
 
@@ -109,12 +124,17 @@
         margin: 0 12px;
       }
 
+      .yxt-FilterOptions-optionLabel::before {
+        background-color: white;
+      }
+
       .yxt-Facets-container {
         padding: 0;
         width: 100%;
       }
 
       @include bpgte(lg) {
+        position: absolute;
         margin-left: calc(-200px - 24px);
         margin-right: 24px;
         margin-bottom: 0;
@@ -123,6 +143,7 @@
         .Answers-filterBox,
         .Answers-sortOptions {
           padding: 0;
+          padding-top: 20px;
           width: 200px;
         }
       }

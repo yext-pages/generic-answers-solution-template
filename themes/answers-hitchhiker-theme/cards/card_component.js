@@ -2,7 +2,7 @@ BaseCard = typeof(BaseCard) !== 'undefined' ?
   BaseCard :
   {};
 
-BaseCard['{{componentName}}'] = class extends ANSWERS.Component {
+BaseCard["{{componentName}}"] = class extends ANSWERS.Component {
   constructor(config = {}, systemConfig = {}) {
     super(config, systemConfig);
     const data = config.data || {};
@@ -36,6 +36,12 @@ BaseCard['{{componentName}}'] = class extends ANSWERS.Component {
     }
 
     let cardData = this.dataForRender(profile);
+    if (cardData.url && cardData.titleEventOptions) {
+      const { url, titleEventOptions } = cardData;
+      const updatedEventOptions = Object.assign({}, titleEventOptions, { url });
+      cardData.titleEventOptions = updatedEventOptions;
+    }
+    
     let { details, showMoreDetails } = cardData;
 
     const cardDetails = details || '';
@@ -49,6 +55,7 @@ BaseCard['{{componentName}}'] = class extends ANSWERS.Component {
     let truncatedDetails = showExcessDetailsToggle
       ? `${cardDetails.substring(0, showMoreLimit)}...`
       : '';
+    
     this.validateDataForRender(cardData);
 
     return super.setState({
@@ -56,7 +63,8 @@ BaseCard['{{componentName}}'] = class extends ANSWERS.Component {
       card: cardData,
       showExcessDetailsToggle: showExcessDetailsToggle,
       truncatedDetails: truncatedDetails,
-      cardName: `{{componentName}}`
+      cardName: `{{componentName}}`,
+      relativePath: `{{relativePath}}`
     });
   }
 
