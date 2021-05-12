@@ -103,10 +103,21 @@ class allfields_standardComponent extends BaseDirectAnswerCard['allfields-standa
         value = isArray ? arrayValue : regularValue;
         break;
       case 'hours':
+        const timezoneOffsetForLocation = relatedItem?.data?.fieldValues?.timeZoneUtcOffset;
         if (isArray) {
-          arrayValue = answer.value.map((value) => `<div>${Formatter.openStatus({hours: value})}</div>`);
+          arrayValue = answer.value.map((value) => {
+            const openStatus = Formatter.openStatus({
+              hours: value,
+              timeZoneUtcOffset: timezoneOffsetForLocation
+            });
+            return `<div>${openStatus}</div>`;
+          });
         } else {
-          regularValue = `<div>${Formatter.openStatus({hours: answer.value})}</div>`;
+          const openStatus = Formatter.openStatus({
+            hours: answer.value,
+            timeZoneUtcOffset: timezoneOffsetForLocation
+          });
+          regularValue = `<div>${openStatus}</div>`;
         }
         value = isArray ? arrayValue : regularValue;
         break;
@@ -196,6 +207,6 @@ class allfields_standardComponent extends BaseDirectAnswerCard['allfields-standa
 
 ANSWERS.registerTemplate(
   'directanswercards/allfields-standard',
-  `{{{read 'directanswercards/allfields-standard/template' }}}`
+  {{{stringifyPartial (read 'directanswercards/allfields-standard/template') }}}
 );
 ANSWERS.registerComponentType(allfields_standardComponent);

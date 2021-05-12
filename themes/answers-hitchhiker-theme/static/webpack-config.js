@@ -4,13 +4,10 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
+const { merge } = require('webpack-merge');
 
 module.exports = function () {
   const jamboConfig = require('./jambo.json');
-  const InlineAssetHtmlPlugin = require(
-    `./${jamboConfig.dirs.output}/static/webpack/InlineAssetHtmlPlugin`
-  );
-
   const htmlPlugins = [];
 
   const htmlAssetPathToOutputFilename = {
@@ -28,17 +25,45 @@ module.exports = function () {
     });
   }
 
-  return {
-    mode: 'production',
+  const plugins = [
+    new MiniCssExtractPlugin({
+      filename: pathData => {
+        const chunkName = pathData.chunk.name;
+        return {
+          HitchhikerJS: 'bundle.css',
+        }[chunkName] || '[name].css'
+      }
+    }),
+    ...htmlPlugins,
+    new webpack.EnvironmentPlugin({
+      JAMBO_INJECTED_DATA: null
+    }),
+    new RemovePlugin({
+      after: {
+        root: `${jamboConfig.dirs.output}`,
+        include: ['static'],
+        log: false
+      }
+    })
+  ];
+
+  const commonConfig = {
+    devtool: 'source-map',
+    stats: 'errors-warnings',
+    performance: {
+      maxAssetSize: 1536000,
+      maxEntrypointSize: 1024000
+    },
     target: ['web', 'es5'],
     entry: {
-      'bundle': `./${jamboConfig.dirs.output}/static/entry.js`,
+      'HitchhikerJS': `./${jamboConfig.dirs.output}/static/entry.js`,
       'iframe': `./${jamboConfig.dirs.output}/static/js/iframe.js`,
       'answers': `./${jamboConfig.dirs.output}/static/js/iframe.js`,
       'overlay-button': `./${jamboConfig.dirs.output}/static/js/overlay/button-frame/entry.js`,
       'overlay': `./${jamboConfig.dirs.output}/static/js/overlay/parent-frame/yxtanswersoverlay.js`,
       'iframe-prod': `./${jamboConfig.dirs.output}/static/js/iframe-prod.js`,
       'iframe-staging': `./${jamboConfig.dirs.output}/static/js/iframe-staging.js`,
+      'VerticalFullPageMap': `./${jamboConfig.dirs.output}/static/js/VerticalFullPageMap.js`
     },
     resolve: {
       alias: {
@@ -46,50 +71,21 @@ module.exports = function () {
       }
     },
     output: {
-      filename: '[name].js',
+      filename: pathData => {
+        const chunkName = pathData.chunk.name;
+        return {
+          VerticalFullPageMap: 'locator-bundle.js',
+          HitchhikerJS: 'bundle.js',
+        }[chunkName] || '[name].js'
+      },
+      library: '[name]',
       path: path.resolve(__dirname, jamboConfig.dirs.output),
-      library: 'HitchhikerJS',
       libraryTarget: 'window',
       publicPath: ''
     },
-    plugins: [
-      new MiniCssExtractPlugin({ filename: '[name].css' }),
-      ...htmlPlugins,
-      new InlineAssetHtmlPlugin(),
-      new webpack.EnvironmentPlugin({
-        JAMBO_INJECTED_DATA: null
-      }),
-      new RemovePlugin({
-        after: {
-          root: `${jamboConfig.dirs.output}`,
-          include: ['static'],
-          log: true
-        }
-      })
-    ],
+    plugins,
     module: {
       rules: [
-        {
-          test: /\.js$/,
-          exclude: [
-            /node_modules\//
-          ],
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-env',
-            ],
-            plugins: [
-              ['@babel/plugin-transform-runtime', {
-                'corejs': 3
-              }],
-              '@babel/syntax-dynamic-import',
-              '@babel/plugin-transform-arrow-functions',
-              '@babel/plugin-proposal-object-rest-spread',
-              '@babel/plugin-transform-object-assign',
-            ]
-          }
-        },
         {
           test: /\.scss$/,
           use: [
@@ -139,5 +135,18 @@ module.exports = function () {
         }
       ],
     },
+  };
+
+  const isDevelopment = (process.env || {}).IS_DEVELOPMENT_PREVIEW === 'true';
+  if (isDevelopment) {
+    const devConfig = require(
+      `./${jamboConfig.dirs.output}/static/webpack/webpack.dev.js`
+    )();
+    return merge(commonConfig, devConfig);
+  } else {
+    const prodConfig = require(
+      `./${jamboConfig.dirs.output}/static/webpack/webpack.prod.js`
+    )();
+    return merge(commonConfig, prodConfig);
   }
 };

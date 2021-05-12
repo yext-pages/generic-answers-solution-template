@@ -1,3 +1,9 @@
+{{!-- Override the default VerticalResults template used in UniversalResults --}}
+ANSWERS.registerTemplate(
+  "results/verticalresults",
+  {{{ stringifyPartial (read "universalsectiontemplates/standard") }}}
+);
+
 ANSWERS.addComponent("UniversalResults", Object.assign({}, {
     container: ".js-answersUniversalResults",
     config: Object.assign({}, {
@@ -31,33 +37,31 @@ ANSWERS.addComponent("UniversalResults", Object.assign({}, {
 
 {{#*inline "VerticalConfig"}}
   {{#if universalSectionTemplate}}
-    template: `{{{read (concat "universalsectiontemplates/" universalSectionTemplate)}}}`,
-  {{else}}
-    template: `{{{read "universalsectiontemplates/standard"}}}`,
+    template: {{{ stringifyPartial (read (concat "universalsectiontemplates/" universalSectionTemplate)) }}},
   {{/if}}
   modifier: "{{{verticalKey}}}",
   {{#if url}}
-    url: "{{#unless (isNonRelativeUrl url)}}{{relativePath}}/{{/unless}}{{{url}}}",
+    url: "{{{relativePathHandler url=url relativePath=relativePath}}}",
     verticalPages: [ // TODO remove this once the theme version does not support pre-v1.3 of the SDK
       {
         verticalKey: "{{{verticalKey}}}",
-        url: "{{#unless (isNonRelativeUrl url)}}{{relativePath}}/{{/unless}}{{{url}}}",
+        url: "{{{relativePathHandler url=url relativePath=relativePath}}}",
       }
     ],
   {{else if pagePath}}
-    url: "{{#unless (isNonRelativeUrl pagePath)}}{{relativePath}}/{{/unless}}{{{pagePath}}}",
+    url: "{{{relativePathHandler url=pagePath relativePath=relativePath}}}",
     verticalPages: [ // TODO remove this once the theme version does not support pre-v1.3 of the SDK
       {
         verticalKey: "{{{verticalKey}}}",
-        pageUrl: "{{#unless (isNonRelativeUrl pagePath)}}{{relativePath}}/{{/unless}}{{{pagePath}}}",
+        pageUrl: "{{{relativePathHandler url=pagePath relativePath=relativePath}}}",
       }
     ],
   {{else if pageName}}
-    url: "{{#unless (isNonRelativeUrl pageName)}}{{relativePath}}/{{/unless}}{{{pageName}}}.html",
+    url: "{{{pageName}}}.html",
     verticalPages: [ // TODO remove this once the theme version does not support pre-v1.3 of the SDK
       {
         verticalKey: "{{{verticalKey}}}",
-        url: "{{#unless (isNonRelativeUrl pageName)}}{{relativePath}}/{{/unless}}{{{pageName}}}.html",
+        url: "{{{pageName}}}.html",
       }
     ],
   {{/if}}
@@ -66,11 +70,11 @@ ANSWERS.addComponent("UniversalResults", Object.assign({}, {
       cardType: "{{{cardType}}}"
     },
   {{/if}}
-  sectionTitle: {{#if sectionTitle}}"{{{sectionTitle}}}"{{else}}"{{> verticalLabel overridedLabel=label verticalKey=verticalKey fallback=verticalKey}}"{{/if}},
+  sectionTitle: {{#if sectionTitle}}"{{{sectionTitle}}}"{{else}}{{> verticalLabel overridedLabel=label verticalKey=verticalKey}}{{/if}},
   {{#if icon}}
     sectionTitleIconName: "{{{icon}}}",
   {{/if}}
-  {{#if iconUrl}}sectionTitleIconUrl: "{{#unless (isNonRelativeUrl iconUrl)}}{{relativePath}}/{{/unless}}{{{iconUrl}}}",{{/if}}
+  {{#if iconUrl}}sectionTitleIconUrl: "{{{relativePathHandler url=iconUrl relativePath=relativePath}}}",{{/if}}
   viewAllText: {{#if viewAllText}}"{{{viewAllText}}}"{{else}}{{ translateJS phrase='View All' context='View is a verb' }}{{/if}},
   {{#if viewMore}}viewMore: {{viewMore}},{{/if}}
   {{#if mapConfig}}
@@ -103,35 +107,15 @@ ANSWERS.addComponent("UniversalResults", Object.assign({}, {
   Prints the vertical label according to specific logic
   Assumes @root has environment variables and global_config
   @param overridedLabel The hardcoded label from configuration in repo, meant to supercede defaults
-  @param verticalKey The current vertical key, if it exists
-  @param fallback The fallback for the label if all else doesn't exist
+  @param verticalKey The current vertical key, if it exists. Will fallback to this value.
 --}}
 {{#*inline 'verticalLabel'}}
   {{~#if overridedLabel ~}}
-    {{{overridedLabel}}}
-  {{~ else if
-    (lookup
-      (lookup 
-        (lookup 
-          (lookup
-            @root.env.JAMBO_INJECTED_DATA.answers.experiences
-            @root.global_config.experienceKey)
-          'verticals')
-        verticalKey)
-      'displayName')
-  ~}}
-    {{{lookup
-      (lookup 
-        (lookup 
-          (lookup
-            @root.env.JAMBO_INJECTED_DATA.answers.experiences
-            @root.global_config.experienceKey)
-          'verticals')
-        verticalKey)
-      'displayName'}}}
-  {{~ else if verticalKey ~}}
-    {{{verticalKey}}}
+    "{{{overridedLabel}}}"
   {{~ else ~}}
-    {{{fallback}}}
+    HitchhikerJS.getInjectedProp(
+      "{{{@root.global_config.experienceKey}}}",
+      ["verticals", "{{{verticalKey}}}", "displayName"])
+    || "{{{verticalKey}}}"
   {{~/if ~}}
 {{/inline}}
