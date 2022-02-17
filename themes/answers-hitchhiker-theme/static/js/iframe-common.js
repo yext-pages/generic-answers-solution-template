@@ -18,7 +18,7 @@ export function generateIFrame(domain, answersExperienceFrame) {
   var containerEl = document.querySelector('#answers-container');
   var iframe = document.createElement('iframe');
   var pathToIndex = containerEl.dataset.path;
-  iframe.allow = 'geolocation';
+  iframe.allow = 'geolocation; microphone';
 
   domain = domain || '';
 
@@ -86,6 +86,13 @@ export function generateIFrame(domain, answersExperienceFrame) {
   };
 
   containerEl.appendChild(iframe);
+
+  // Notify iframe of a click event on parent window
+  document.addEventListener('click', e => {
+    if (e.isTrusted) {
+      sendToIframe({ eventType: e.type });
+    }
+  });
 
   // For dynamic iFrame resizing
   iFrameResize({

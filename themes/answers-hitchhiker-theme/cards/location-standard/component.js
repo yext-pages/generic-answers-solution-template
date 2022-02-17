@@ -28,7 +28,7 @@ class location_standardCardComponent extends BaseCard['location-standard'] {
       // subtitle: '', // The sub-header text of the card
       hours: Formatter.openStatus(profile),
       // services: [], // Used for a comma delimited list of services for the location
-      address: Formatter.address(profile), // The address for the card
+      address: Formatter.address(profile) || profile.locationString || '', // The address for the card
       phone: Formatter.nationalizedPhoneDisplay(profile), // The phone number for the card
       phoneEventOptions: this.addDefaultEventOptions(), // The analytics event options for phone clicks
       distance: Formatter.toLocalizedDistance(profile), // Distance from the user’s or inputted location
@@ -53,7 +53,11 @@ class location_standardCardComponent extends BaseCard['location-standard'] {
         eventType: 'DRIVING_DIRECTIONS',
         eventOptions: this.addDefaultEventOptions(),
         // ariaLabel: '',
-      }
+      },
+      feedback: false, // Shows thumbs up/down buttons to provide feedback on the result card
+      feedbackTextOnSubmission: 'Thanks!', // Text to display after a thumbs up/down is clicked
+      positiveFeedbackSrText: 'This answered my question', // Screen reader only text for thumbs-up
+      negativeFeedbackSrText: 'This did not answer my question' // Screen reader only text for thumbs-down
     };
   }
 

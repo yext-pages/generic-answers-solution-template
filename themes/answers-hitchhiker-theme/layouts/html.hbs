@@ -6,7 +6,9 @@
       if (window.name == 'overlay') {
         window.isOverlay = true;
       }
-      {{> script/translations}}
+      {{#wrapJsPartial}}
+        {{> script/translations}}
+      {{/wrapJsPartial}}
       {{/babel}}
     </script>
     {{> layouts/headincludes }}
@@ -72,10 +74,15 @@
     <script>
       {{#babel}}
         document.addEventListener('DOMContentLoaded', () => {
-          {{> script/on-document-load}}
           {{#if global_config.initializeManually}}
             new HitchhikerJS.ManualInitializer(initAnswers).setup();
+            {{#wrapJsPartial}}
+              {{> script/on-document-load}}
+            {{/wrapJsPartial}}
           {{else}}
+            {{#wrapJsPartial}}
+              {{> script/on-document-load}}
+            {{/wrapJsPartial}}
             initAnswers();
           {{/if}}
         });
@@ -138,6 +145,10 @@
             HitchhikerJS.RuntimeConfigReceiver.handle(message.runtimeConfig);
           } else if (window.isOverlay) {
             window.Overlay.onMessage(message);
+          } else if (message.eventType && message.eventType === 'click') {
+            ANSWERS.components._activeComponents
+              .filter(component => component.name === 'SearchBar.autocomplete')
+              .forEach(autocompleteComponent => autocompleteComponent.close());
           }
         }
       };
